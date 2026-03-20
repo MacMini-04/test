@@ -26,7 +26,7 @@ def ocr():
         with open(pdf_path, 'wb') as f:
             f.write(base64.b64decode(pdf_b64))
 
-        subprocess.run(['convert', '-density', '150', f'{pdf_path}[0]', img_path], check=True)
+        subprocess.run(['magick', '-density', '150', f'{pdf_path}[0]', img_path], check=True)
         subprocess.run(['tesseract', img_path, txt_path], check=True)
 
         with open(f'{txt_path}.txt', 'r') as f:
