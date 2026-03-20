@@ -8,23 +8,17 @@ app = Flask(__name__)
 
 @app.route('/ocr', methods=['POST'])
 def ocr():
-    data = request.json
-    pdf_b64 = data.get('pdf')
-
-    if not pdf_b64:
-        return jsonify({'error': 'No PDF provided'}), 400
-
-    # Strip data URL prefix if present
-    if ',' in pdf_b64:
-        pdf_b64 = pdf_b64.split(',')[1]
+    file = request.files.get('file')
+    
+    if not file:
+        return jsonify({'error': 'No file provided'}), 400
 
     with tempfile.TemporaryDirectory() as tmpdir:
         pdf_path = os.path.join(tmpdir, 'mail.pdf')
         img_path = os.path.join(tmpdir, 'mail.jpg')
         txt_path = os.path.join(tmpdir, 'output')
 
-        with open(pdf_path, 'wb') as f:
-            f.write(base64.b64decode(pdf_b64))
+        file.save(pdf_path)
 
         subprocess.run(['magick', '-density', '150', f'{pdf_path}[0]', img_path], check=True)
         subprocess.run(['tesseract', img_path, txt_path], check=True)
