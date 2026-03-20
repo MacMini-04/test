@@ -14,6 +14,10 @@ def ocr():
     if not pdf_b64:
         return jsonify({'error': 'No PDF provided'}), 400
 
+    # Strip data URL prefix if present
+    if ',' in pdf_b64:
+        pdf_b64 = pdf_b64.split(',')[1]
+
     with tempfile.TemporaryDirectory() as tmpdir:
         pdf_path = os.path.join(tmpdir, 'mail.pdf')
         img_path = os.path.join(tmpdir, 'mail.jpg')
@@ -31,4 +35,4 @@ def ocr():
     return jsonify({'text': text})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5001)
